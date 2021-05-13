@@ -109,12 +109,12 @@
         </DCCReference>
         <DCCReference Include="Model\Connections\Model.Connections.Interfaces.pas"/>
         <DCCReference Include="Model\Connections\Model.Connections.RestRequest.pas"/>
-        <DCCReference Include="Model\Services\Model.Services.Interfaces.pas"/>
         <DCCReference Include="Model\Services\CEP\Model.Services.CEP.APICEP.pas"/>
         <DCCReference Include="Model\Services\CEP\Model.Services.CEP.ViaCEP.pas"/>
         <DCCReference Include="Model\Services\CEP\Model.Services.CEP.Interfaces.pas"/>
         <DCCReference Include="Model\Services\CEP\Model.Services.CEP.Builder.pas"/>
         <DCCReference Include="Model\Services\CEP\Model.Services.CEP.BrasilAPI.pas"/>
+        <DCCReference Include="Model\Services\Model.Services.Interfaces.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -141,7 +141,7 @@
                 </Excluded_Packages>
             </Delphi.Personality>
             <Deployment Version="3">
-                <DeployFile LocalName="Win32\Debug\AppMyCep.exe" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="bin\AppMyCep.exe" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>AppMyCep.exe</RemoteName>
                         <Overwrite>true</Overwrite>

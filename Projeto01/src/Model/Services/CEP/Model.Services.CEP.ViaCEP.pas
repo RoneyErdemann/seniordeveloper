@@ -3,20 +3,24 @@ unit Model.Services.CEP.ViaCEP;
 interface
 
 Uses
+  System.SysUtils,
   Model.Services.Interfaces;
 
 Type
-  TModelServiceCEPViaCEP = Class(TInterfacedObject, iModelServicesCEP)
+  TModelServicesCEPViaCEP = Class(TInterfacedObject, iModelServicesCEP)
     private
-      [weak]
       FParent : iModelServicesCEP;
       FReturn: String;
       FCode : String;
+      FDisplay : TProc<String>;
+      procedure _Return(aValue : String);
     public
-      constructor Create(aParent: iModelServicesCEP);
+      constructor Create(aParent : iModelServicesCEP);
       destructor Destroy; override;
-      class function New(aParent: iModelServicesCEP): iModelServicesCEP;
+      class function New(aParent : iModelServicesCEP): iModelServicesCEP;
       function Code ( aValue : String ) : iModelServicesCEP;
+      function Display ( aValue : TProc<String>) : iModelServicesCEP; overload;
+      function Display : TProc<String>; overload;
       function Execute : iModelServicesCEP;
       function Return : String;
   end;
@@ -24,51 +28,69 @@ Type
 implementation
 
 uses
-  Model.Connections.RestRequest, System.SysUtils;
+  Model.Connections.RestRequest;
 
-{ TModelServiceCEPViaCEP }
+{ TModelServicesCEPAPICEP }
 
-function TModelServiceCEPViaCEP.Code(aValue: String): iModelServicesCEP;
+function TModelServicesCEPViaCEP.Code(aValue: String): iModelServicesCEP;
 begin
   Result := Self;
   FCode := aValue;
 end;
 
-constructor TModelServiceCEPViaCEP.Create(aParent: iModelServicesCEP);
+constructor TModelServicesCEPViaCEP.Create(aParent : iModelServicesCEP);
 begin
   FParent := aParent;
 end;
 
-destructor TModelServiceCEPViaCEP.Destroy;
+destructor TModelServicesCEPViaCEP.Destroy;
 begin
 
   inherited;
 end;
 
-function TModelServiceCEPViaCEP.Execute: iModelServicesCEP;
+function TModelServicesCEPViaCEP.Display: TProc<String>;
+begin
+  Result := FDisplay;
+end;
+
+function TModelServicesCEPViaCEP.Display(
+  aValue: TProc<String>): iModelServicesCEP;
+begin
+  Result := Self;
+  FDisplay := aValue;
+end;
+
+function TModelServicesCEPViaCEP.Execute: iModelServicesCEP;
 begin
   Result := Self;
   try
-    //raise Exception.Create('Error Message');
-    FReturn := 'ViaCEP - ' +
-     TModelConnectionsRestResquest
+    _Return('ViaCEP - ' +
+    TModelConnectionsRestRequest
       .New
-        .Get('https://viacep.com.br/ws/' + FCode + '/json/')
-        .Return;
+        .Get('https://viacep.com.br/ws/'+FCode+'/json/')
+        .Return);
   except
     if Assigned(FParent) then
-      FReturn := FParent.Code(FCode).Execute.Return;
+      _Return(FParent.Code(FCode).Execute.Return);
   end;
 end;
 
-class function TModelServiceCEPViaCEP.New(aParent: iModelServicesCEP): iModelServicesCEP;
+class function TModelServicesCEPViaCEP.New(aParent : iModelServicesCEP) : iModelServicesCEP;
 begin
   Result := Self.Create(aParent);
 end;
 
-function TModelServiceCEPViaCEP.Return: String;
+function TModelServicesCEPViaCEP.Return: String;
 begin
   Result := FReturn;
+end;
+
+procedure TModelServicesCEPViaCEP._Return(aValue: String);
+begin
+  FReturn := aValue;
+  if Assigned(FDisplay) then
+    FDisplay(FReturn);
 end;
 
 end.

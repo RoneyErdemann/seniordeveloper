@@ -2,21 +2,25 @@ unit Model.Services.CEP.BrasilAPI;
 
 interface
 
-Uses
+uses
+  System.SysUtils,
   Model.Services.Interfaces;
 
 Type
-  TModelServiceCEPBrasilAPI = Class(TInterfacedObject, iModelServicesCEP)
+  TModelServicesCEPBrasilAPI = Class(TInterfacedObject, iModelServicesCEP)
     private
-      [weak]
       FParent : iModelServicesCEP;
       FReturn: String;
       FCode : String;
+      FDisplay : TProc<String>;
+      procedure _Return(aValue : String);
     public
       constructor Create(aParent: iModelServicesCEP);
       destructor Destroy; override;
       class function New(aParent: iModelServicesCEP): iModelServicesCEP;
       function Code ( aValue : String ) : iModelServicesCEP;
+      function Display ( aValue : TProc<String> ) : iModelServicesCEP; overload;
+      function Display : TProc<String>; overload;
       function Execute : iModelServicesCEP;
       function Return : String;
   end;
@@ -24,51 +28,69 @@ Type
 implementation
 
 uses
-  Model.Connections.RestRequest, System.SysUtils;
+  Model.Connections.RestRequest;
 
-{ TModelServiceCEPBrasilAPI }
+{ TModelServicesCEPBrasilAPI }
 
-function TModelServiceCEPBrasilAPI.Code(aValue: String): iModelServicesCEP;
+function TModelServicesCEPBrasilAPI.Code(aValue: String): iModelServicesCEP;
 begin
   Result := Self;
   FCode := aValue;
 end;
 
-constructor TModelServiceCEPBrasilAPI.Create(aParent: iModelServicesCEP);
+constructor TModelServicesCEPBrasilAPI.Create(aParent: iModelServicesCEP);
 begin
   FParent := aParent;
 end;
 
-destructor TModelServiceCEPBrasilAPI.Destroy;
+destructor TModelServicesCEPBrasilAPI.Destroy;
 begin
 
   inherited;
 end;
 
-function TModelServiceCEPBrasilAPI.Execute: iModelServicesCEP;
+function TModelServicesCEPBrasilAPI.Display: TProc<String>;
+begin
+  Result := FDisplay;
+end;
+
+function TModelServicesCEPBrasilAPI.Display(
+  aValue: TProc<String>): iModelServicesCEP;
+begin
+  Result := Self;
+  FDisplay := aValue;
+end;
+
+function TModelServicesCEPBrasilAPI.Execute: iModelServicesCEP;
 begin
   Result := Self;
   try
-    //raise Exception.Create('Error Message');
-    FReturn := 'BrasilAPI - ' +
-     TModelConnectionsRestResquest
+    _Return('BrasilAPI - ' +
+    TModelConnectionsRestRequest
       .New
-        .Get('https://brasilapi.com.br/api/cep/v1/' + FCode)
-        .Return;
+        .Get('https://brasilapi.com.br/api/cep/v1/'+ FCode)
+        .Return);
   except
     if Assigned(FParent) then
-      FReturn := FParent.Code(FCode).Execute.Return;
+      _Return(FParent.Code(FCode).Execute.Return);
   end;
 end;
 
-class function TModelServiceCEPBrasilAPI.New(aParent: iModelServicesCEP): iModelServicesCEP;
+class function TModelServicesCEPBrasilAPI.New(aParent: iModelServicesCEP): iModelServicesCEP;
 begin
   Result := Self.Create(aParent);
 end;
 
-function TModelServiceCEPBrasilAPI.Return: String;
+function TModelServicesCEPBrasilAPI.Return: String;
 begin
   Result := FReturn;
+end;
+
+procedure TModelServicesCEPBrasilAPI._Return(aValue: String);
+begin
+  FReturn := aValue;
+  if Assigned(FDisplay) then
+    FDisplay(FReturn);
 end;
 
 end.

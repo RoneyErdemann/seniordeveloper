@@ -26,11 +26,11 @@ uses
 function TModelServicesCEPBuilder.CEP: iModelServicesCEP;
 begin
   Result :=
-    TModelServiceCEPViaCEP
+    TModelServicesCEPViaCEP
       .New(
-         TModelServiceCEPAPICEP
+         TModelServicesCEPBrasilAPI
           .New(
-              TModelServiceCEPBrasilAPI
+             TModelServicesCEPAPICEP
               .New(nil))
         );
 end;

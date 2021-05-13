@@ -7,7 +7,7 @@ Uses
   RESTRequest4D;
 
 Type
-  TModelConnectionsRestResquest = Class(TInterfacedObject, iModelConnectionsInterface)
+  TModelConnectionsRestRequest = Class(TInterfacedObject, iModelConnectionsInterface)
   private
     FReturn : String;
   public
@@ -22,18 +22,18 @@ implementation
 
 { TModelConnectionsRestResquest }
 
-constructor TModelConnectionsRestResquest.Create;
+constructor TModelConnectionsRestRequest.Create;
 begin
 
 end;
 
-destructor TModelConnectionsRestResquest.Destroy;
+destructor TModelConnectionsRestRequest.Destroy;
 begin
 
   inherited;
 end;
 
-function TModelConnectionsRestResquest.Get(
+function TModelConnectionsRestRequest.Get(
   aValue: String): iModelConnectionsInterface;
 var
   LResponse: IResponse;
@@ -48,12 +48,12 @@ begin
     FReturn := (LResponse.Content);
 end;
 
-class function TModelConnectionsRestResquest.New: iModelConnectionsInterface;
+class function TModelConnectionsRestRequest.New: iModelConnectionsInterface;
 begin
   Result := Self.Create;
 end;
 
-function TModelConnectionsRestResquest.Return: String;
+function TModelConnectionsRestRequest.Return: String;
 begin
   Result := FReturn;
 end;
